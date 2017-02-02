@@ -14,7 +14,7 @@
 -->
 <resources>
     <!-- Title for the application. [CHAR LIMIT=12] -->
-    <string name="app_name">Miwok</string>
+    <string name="app_name">Lets Shield</string>
 
     <!-- Category name for phrases [CHAR LIMIT=20] -->
     <string name="category_phrases">Phrases</string>
@@ -23,6 +23,8 @@
     <string name="sign_out">Sign Out</string>
     <string name="invite_menu_label">Invite</string>
     <string name="cause_crash">Cause Crash</string>
+    <string name="terms_string">Terms and Conditions</string>
+    <string name="login">login </string>
 
 
     <!-- Category name for the vocabulary words for colors [CHAR LIMIT=20] -->
