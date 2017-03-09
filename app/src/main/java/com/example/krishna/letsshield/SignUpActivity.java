@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.krishna.letsshield.Model.User;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -158,7 +159,7 @@ public class SignUpActivity extends BaseActivity implements GoogleApiClient.OnCo
         else username = user.getDisplayName();
         // String username = mNameField.getText().toString();
         // Write new user
-        writeNewUser(user.getUid(), username, user.getEmail(), user.getPhotoUrl()!= null ?user.getPhotoUrl().toString():null);
+        writeNewUser(user.getUid(), username, user.getEmail());
 
         // Go to DashboardActivityM
         startActivity(new Intent(SignUpActivity.this, MainActivity.class));
@@ -214,8 +215,8 @@ public class SignUpActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     // [START basic_write]
-    private void writeNewUser(String userId, String name, String email, String image) {
-        User user = new User(name, email, image);
+    private void writeNewUser(String userId, String name, String email) {
+        User user = new User(name, email);
 
         mDatabase.child("users").child(userId).setValue(user);
     }

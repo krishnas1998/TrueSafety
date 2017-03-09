@@ -81,6 +81,9 @@ public class SignInActivity extends AppCompatActivity implements
             case R.id.sign_in_button:
                 signIn();
                 break;
+            case R.id.link_signup:
+                startActivity(new Intent(this,SignUpActivity.class));
+                break;
         }
     }
 
@@ -136,5 +139,9 @@ public class SignInActivity extends AppCompatActivity implements
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
+    public void signup(View view) {
+        startActivity(new Intent(this,SignUpActivity.class));
     }
 }
