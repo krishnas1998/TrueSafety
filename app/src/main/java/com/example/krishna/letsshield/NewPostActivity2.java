@@ -29,6 +29,7 @@ public class NewPostActivity2 extends BaseActivity {
 
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
+    private static final String NUMBERLENGTH = "Not a valid Number";
 
     // [START declare_database_ref]
     private DatabaseReference mDatabase;
@@ -38,6 +39,7 @@ public class NewPostActivity2 extends BaseActivity {
 
     private EditText[] mNumber = new EditText[5];
     private FloatingActionButton mSubmitButton;
+    int num,i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +77,31 @@ public class NewPostActivity2 extends BaseActivity {
         number[2] = mNumber[2].getText().toString();
         number[3] = mNumber[3].getText().toString();
         number[4] = mNumber[4].getText().toString();
+
+        /*try {
+
+            for( i = 0; i<5; i++)
+            num = Integer.parseInt(number[i]);
+            Log.i("",num+" is a number");
+        } catch (NumberFormatException e) {
+            mNumber[i].setError("Not a Number");
+            Log.i("",number[i]+" is not a number");
+            return;
+        }*/
+
+
+        for(i=0; i<5;i++)
+        {
+            if (TextUtils.isEmpty(number[i])) {
+                mNumber[i].setError(REQUIRED);
+                return;
+            }
+            if(number[i].length()!=10)
+                mNumber[i].setError(NUMBERLENGTH);
+        }
+
         // Title is required
-        if (TextUtils.isEmpty(number[0])) {
+       /* if (TextUtils.isEmpty(number[0])) {
             mNumber[0].setError(REQUIRED);
             return;
         }
@@ -100,7 +125,8 @@ public class NewPostActivity2 extends BaseActivity {
         if (TextUtils.isEmpty(number[4])){
             mNumber[4].setError(REQUIRED);
             return;
-        }
+        }*/
+
 
         // Disable button so there are no multi-posts
         setEditingEnabled(false);
@@ -169,7 +195,8 @@ public class NewPostActivity2 extends BaseActivity {
         Map<String, Object> childUpdates = new HashMap<>();
         //childUpdates.put("/posts/" + key, postValues);
        // childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
-        childUpdates.put("/user-posts/" + userId, postValues);
+        mDatabase.child("users").child(userId).child("contact").setValue(post);
+
 
         mDatabase.updateChildren(childUpdates);
     }

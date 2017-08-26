@@ -13,7 +13,8 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:background="@color/dark_blue"
-        android:hint="NUmber 1"
+        android:inputType="number"
+        android:hint="Number 1"
         android:maxLines="1" />
 
     <EditText
@@ -27,6 +28,7 @@
         android:layout_marginTop="16dp"
         android:background="@color/dark_blue"
         android:hint="Number 2"
+        android:inputType="number"
         android:maxLines="1" />
 
     <EditText
@@ -39,6 +41,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:background="@color/dark_blue"
+        android:inputType="number"
         android:hint="Number 3"
         android:maxLines="1" />
 
@@ -52,6 +55,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:background="@color/dark_blue"
+        android:inputType="number"
         android:hint="Number 4"
         android:maxLines="1" />
 
@@ -67,7 +71,8 @@
         android:layout_marginTop="16dp"
         android:background="@color/dark_blue"
         android:hint="Number 5"
-        android:inputType="textMultiLine"
+        android:inputType="number"
+
         android:maxLines="10"
         android:scrollHorizontally="false" />
 

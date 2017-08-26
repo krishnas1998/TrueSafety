@@ -5,7 +5,10 @@ package com.example.krishna.letsshield;
  */
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -59,4 +62,12 @@ public class AndroidGPSTrackingActivity extends Activity {
         });
     }
 
+    public void sendLocation(View view) {
+
+
+        PendingIntent pi = PendingIntent.getActivity(this, 0,
+                new Intent(this, AndroidGPSTrackingActivity.class), 0);
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage("8826013933", null, "hello", pi, null);
+    }
 }

@@ -3,6 +3,9 @@
     package="com.example.krishna.letsshield">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
@@ -23,6 +26,7 @@
         <activity android:name=".AndroidGPSTrackingActivity"/>
         <activity android:name=".SignUpActivity" android:label="Sign Up"/>
         <activity android:name=".NewPostActivity2" android:label="New Post"/>
+        <activity android:name=".PhoneAuthActivity" android:label = "Phone Authentication"/>
     </application>
 
 </manifest>
