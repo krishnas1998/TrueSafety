@@ -1,38 +1,48 @@
 package com.example.krishna.letsshield;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.krishna.letsshield.Model.Post;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Created by krishna on 7/3/17.
+ * Created by krishna on 12/9/17.
  */
 
-        import android.app.Activity;
-        import android.content.Intent;
-        import android.database.Cursor;
-        import android.net.Uri;
-        import android.os.Bundle;
-        import android.provider.ContactsContract;
-        import android.support.design.widget.FloatingActionButton;
-        import android.text.TextUtils;
-        import android.util.Log;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.Toast;
-
-        import com.example.krishna.letsshield.Model.Post;
-        import com.example.krishna.letsshield.Model.User;
-        import com.google.firebase.auth.FirebaseAuth;
-        import com.google.firebase.auth.FirebaseUser;
-        import com.google.firebase.database.DataSnapshot;
-        import com.google.firebase.database.DatabaseError;
-        import com.google.firebase.database.DatabaseReference;
-        import com.google.firebase.database.FirebaseDatabase;
-        import com.google.firebase.database.ValueEventListener;
-
-        import java.util.HashMap;
-        import java.util.Map;
-
-public class NewPostActivity2 extends BaseActivity {
-
+public class SecondFragment extends Fragment {
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
     private static final String NUMBERLENGTH = "Not a valid Number";
@@ -45,32 +55,36 @@ public class NewPostActivity2 extends BaseActivity {
 
     private EditText[] mNumber = new EditText[5];
     private FloatingActionButton mSubmitButton;
-
+    private Button pickContact;
     static final int PICK_CONTACT=1;
+    static final int PERMISSION_REQUEST_CONTACT = 99;
 
     int num;
     static int i = 0;
-
-
+    private View view;
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_post);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (view == null) {
+            view = inflater.inflate(R.layout.activity_new_post, container, false);
+
+        }
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         final String userId = mFirebaseUser.getUid();
+
 
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
 
-        mNumber[0] = (EditText) findViewById(R.id.number1);
-        mNumber[1] = (EditText) findViewById(R.id.number2);
-        mNumber[2] = (EditText) findViewById(R.id.number3);
-        mNumber[3] = (EditText) findViewById(R.id.number4);
-        mNumber[4] = (EditText) findViewById(R.id.number5);
-        mSubmitButton = (FloatingActionButton) findViewById(R.id.fab_submit_post);
-
+        mNumber[0] = (EditText) view.findViewById(R.id.number1);
+        mNumber[1] = (EditText) view.findViewById(R.id.number2);
+        mNumber[2] = (EditText) view.findViewById(R.id.number3);
+        mNumber[3] = (EditText) view.findViewById(R.id.number4);
+        mNumber[4] = (EditText) view.findViewById(R.id.number5);
+        pickContact = (Button)view.findViewById(R.id.pickContactButton);
+        mSubmitButton = (FloatingActionButton) view.findViewById(R.id.fab_submit_post);
 
 
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +94,14 @@ public class NewPostActivity2 extends BaseActivity {
 
             }
         });
+        pickContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                askForContactPermission();
+            }
+        });
+        return view;
+
     }
 
     private void submitPost() {
@@ -146,7 +168,7 @@ public class NewPostActivity2 extends BaseActivity {
 
         // Disable button so there are no multi-posts
         setEditingEnabled(false);
-        Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
 
         // [START single_value_read]
         final String userId = mFirebaseUser.getUid();
@@ -168,12 +190,13 @@ public class NewPostActivity2 extends BaseActivity {
                             // Write new post
                         */   // writeNewPost(userId, user.username, title, body);
                         writeNewPost(userId,number);
-                       // }
+                        // }
 
                         // Finish this Activity, back to the stream
                         setEditingEnabled(true);
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        fm.popBackStack();
 
-                        finish();
                         // [END_EXCLUDE]
                     }
 
@@ -187,7 +210,6 @@ public class NewPostActivity2 extends BaseActivity {
                 });
         // [END single_value_read]
     }
-
     private void setEditingEnabled(boolean enabled) {
         mNumber[0].setEnabled(enabled);
         mNumber[1].setEnabled(enabled);
@@ -211,7 +233,7 @@ public class NewPostActivity2 extends BaseActivity {
 
         Map<String, Object> childUpdates = new HashMap<>();
         //childUpdates.put("/posts/" + key, postValues);
-       // childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+        // childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
         mDatabase.child("users").child(userId).child("contact").setValue(post);
 
 
@@ -220,13 +242,84 @@ public class NewPostActivity2 extends BaseActivity {
 
     public void pickContact() {
 
-
-            Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-            startActivityForResult(intent, PICK_CONTACT);
-
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, PICK_CONTACT);
 
 
 
+
+    }
+
+    public void askForContactPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        android.Manifest.permission.READ_CONTACTS)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Contacts access needed");
+                    builder.setPositiveButton(android.R.string.ok, null);
+                    builder.setMessage("please confirm Contacts access");//TODO put real question
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(
+                                    new String[]
+                                            {android.Manifest.permission.READ_CONTACTS}
+                                    , PERMISSION_REQUEST_CONTACT);
+                        }
+                    });
+                    builder.show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{android.Manifest.permission.READ_CONTACTS},
+                            PERMISSION_REQUEST_CONTACT);
+
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            }else{
+                pickContact();
+            }
+        }
+        else{
+            pickContact();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CONTACT: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickContact();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(getContext(),"No permission for contacts",Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     @Override
@@ -239,8 +332,8 @@ public class NewPostActivity2 extends BaseActivity {
                 if (resultCode == Activity.RESULT_OK) {
 
                     Uri contactData = data.getData();
-                    Cursor c =  getContentResolver().query(contactData, null, null, null, null);
-                   // c.moveToFirst();
+                    Cursor c = getContext().getContentResolver().query(contactData, null, null, null, null);
+                    // c.moveToFirst();
 
                     if (c.moveToFirst()) {
 
@@ -250,7 +343,7 @@ public class NewPostActivity2 extends BaseActivity {
                         String hasPhone =c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
 
                         if (hasPhone.equalsIgnoreCase("1")) {
-                            Cursor phones = getContentResolver().query(
+                            Cursor phones = getContext().getContentResolver().query(
                                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
                                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = "+ id,
                                     null, null);
@@ -265,7 +358,7 @@ public class NewPostActivity2 extends BaseActivity {
                 }
                 break;
         }
-      //  Toast.makeText(this,"No : "+cNumber,Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(this,"No : "+cNumber,Toast.LENGTH_SHORT).show();
         cNumber = cNumber.trim().replaceAll("\\s+","");
         if (cNumber.length() == 10) {
 
@@ -279,5 +372,10 @@ public class NewPostActivity2 extends BaseActivity {
         i++;
 
     }
-    // [END write_fan_out]
+
+    public static SecondFragment newInstance()
+    {
+        SecondFragment f = new SecondFragment();
+        return f;
+    }
 }

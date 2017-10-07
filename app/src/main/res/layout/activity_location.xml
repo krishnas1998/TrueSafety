@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:text="Send Location"
         android:id="@+id/sendButton"
-        android:onClick="sendLocation"
+
         />
 
 </LinearLayout>

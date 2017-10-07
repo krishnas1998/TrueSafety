@@ -1,0 +1,15 @@
+<tabs  >
+    <tab
+        id="@+id/home_tabs"
+        icon="@drawable/ic_home_black_24dp"
+        title="Home" />
+    <tab
+        id="@+id/my_orders"
+        icon="@drawable/ic_notifications_black_24dp"
+        title="Update" />
+    <tab
+        id="@+id/location_history"
+        icon="@drawable/ic_lock_white_24dp"
+        title="Location History" />
+
+</tabs>

@@ -1,80 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="30dp">
+
+
+
+    <TextView
+        android:id="@+id/contact_Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:text="Enter The Contacts"
+        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/number1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/dark_blue"
-        android:inputType="number"
-        android:hint="Number 1"
-        android:maxLines="1" />
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/contact_Header"
+        android:ems="10"
+        android:inputType="phone" />
 
     <EditText
         android:id="@+id/number2"
-        android:layout_below="@id/number1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/dark_blue"
-        android:hint="Number 2"
-        android:inputType="number"
-        android:maxLines="1" />
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/number1"
+        android:ems="10"
+        android:inputType="phone" />
 
     <EditText
         android:id="@+id/number3"
-        android:layout_below="@+id/number2"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/dark_blue"
-        android:inputType="number"
-        android:hint="Number 3"
-        android:maxLines="1" />
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/number2"
+        android:ems="10"
+        android:inputType="phone" />
 
     <EditText
         android:id="@+id/number4"
-        android:layout_below="@+id/number3"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/dark_blue"
-        android:inputType="number"
-        android:hint="Number 4"
-        android:maxLines="1" />
-
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/number3"
+        android:ems="10"
+        android:inputType="phone" />
 
     <EditText
         android:id="@+id/number5"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/number4"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/dark_blue"
-        android:hint="Number 5"
-        android:inputType="number"
-
-        android:maxLines="10"
-        android:scrollHorizontally="false" />
+        android:layout_marginBottom="10dp"
+        android:layout_below="@id/number4"
+        android:ems="10"
+        android:inputType="phone" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_submit_post"
@@ -83,6 +69,20 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_launcher" />
+
+    <Button
+        android:id="@+id/pickContactButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/number1"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/contact_Header"
+
+        android:text="Contact 1" />
+
+
+
 
 </RelativeLayout>

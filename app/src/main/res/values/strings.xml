@@ -51,4 +51,7 @@
 
     <!-- Category name for the vocabulary words for family members [CHAR LIMIT=20] -->
     <string name="category_family">Family Members</string>
+    <string name="ok">OK</string>
+    <string name="text_location_permission">Location Permission</string>
+    <string name="title_location_permission">Location</string>
 </resources>

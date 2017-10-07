@@ -16,12 +16,21 @@ package com.example.krishna.letsshield;
  * limitations under the License.
  */
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,10 +44,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
+
 import android.support.v7.widget.LinearLayoutManager;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class MainActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     private static final String TAG = "MainActivity";
     private FirebaseAuth mFirebaseAuth;
@@ -52,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
+    Fragment selectedFragment=FirstFragment.newInstance(),fragment=null;
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static BottomBar bottomBar;
 
     // Firebase instance variables
 
@@ -61,7 +76,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // Set the content of the activity to use the activity_main.xml layout file
         setContentView(R.layout.activity_main);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        fragment = FirstFragment.newInstance();
+
+
+        //Manually displaying the first fragment - one time only
+        FragmentTransaction transaction = getSupportFragmentManager().
+                beginTransaction();
+        transaction.replace(R.id.frame_layout,fragment);
+        transaction.commit();
+
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -71,12 +94,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
-        } else {
+        }
+        else {
             mUsername = mFirebaseUser.getDisplayName();
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
             }
         }
+
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -85,15 +110,37 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // Initialize ProgressBar and RecyclerView.
 
-        mLinearLayoutManager = new LinearLayoutManager(this);
-        mLinearLayoutManager.setStackFromEnd(true);
 
-        findViewById(R.id.fab_new_post).setOnClickListener(new View.OnClickListener() {
+      /*  findViewById(R.id.fab_new_post).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, NewPostActivity2.class));
             }
+        });*/
+
+        bottomBar = (BottomBar)findViewById(R.id.bottomBar);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                switch (tabId)
+                {
+                    case R.id.home_tabs:
+                        selectedFragment = FirstFragment.newInstance();
+                        break;
+                    case R.id.my_orders:
+                        selectedFragment = SecondFragment.newInstance();
+                        break;
+                    case R.id.location_history:
+                        selectedFragment = ThirdFragment.newInstance();
+                        break;
+
+                }
+                switchFragment(selectedFragment);
+            }
         });
+
+
+
     }
 
 
@@ -101,27 +148,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in.
-        // TODO: Add code to check if user is signed in.
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -156,4 +184,110 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void getLocation(View view) {
         startActivity(new Intent(this,AndroidGPSTrackingActivity.class));
     }
+
+    void switchFragment(@NonNull Fragment fragment) {
+        String backStateName = fragment.getClass().getName();
+
+        FragmentManager manager = getSupportFragmentManager();
+        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
+
+        if (!fragmentPopped){ //fragment not in back stack, create it.
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.replace(R.id.frame_layout, fragment);
+            ft.addToBackStack(backStateName);
+            ft.commit();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (checkLocationPermission()) {
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission. ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this,"Granted",Toast.LENGTH_SHORT).show();
+                //Request location updates:
+                // locationManager.requestLocationUpdates(provider, 400, 1, this);
+            }
+        }
+    }
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission. ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    android.Manifest.permission. ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_location_permission)
+                        .setMessage(R.string.text_location_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{android.Manifest.permission. ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission. ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,"Granted",Toast.LENGTH_SHORT).show();
+                        //Request location updates:
+                        // locationManager.requestLocationUpdates(provider, 400, 1, this);
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                }
+                return;
+            }
+
+        }
+    }
+
 }
